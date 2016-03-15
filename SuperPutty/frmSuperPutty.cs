@@ -985,6 +985,15 @@ namespace SuperPutty
             String host = this.tbTxtBoxHost.Text;
             String protoString = (string)this.tbComboProtocol.SelectedItem;
 
+            TryConnectHost(host, protoString);
+            RefreshConnectionToolbarData();
+        }
+
+        private void TryConnectHost(string host, string protoString)
+        {
+            // Method contract
+            if (String.IsNullOrEmpty(host)) return;
+
             HostConnectionString connStr = new HostConnectionString(host);
             bool isScp = "SCP" == protoString;
             ConnectionProtocol proto = isScp
@@ -1003,7 +1012,6 @@ namespace SuperPutty
             };
             SuperPuTTY.OpenSession(new SessionDataStartInfo { Session = session, UseScp = isScp });
             oldHostName = this.tbTxtBoxHost.Text;
-            RefreshConnectionToolbarData();
         }
 
         void RefreshConnectionToolbarData()
