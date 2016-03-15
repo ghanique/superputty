@@ -979,31 +979,31 @@ namespace SuperPutty
 
         void TryConnectFromToolbar()
         {
+            // Method contract
+            if (String.IsNullOrEmpty(this.tbTxtBoxHost.Text)) return;
+
             String host = this.tbTxtBoxHost.Text;
             String protoString = (string)this.tbComboProtocol.SelectedItem;
 
-            if (!String.IsNullOrEmpty(host))
+            HostConnectionString connStr = new HostConnectionString(host);
+            bool isScp = "SCP" == protoString;
+            ConnectionProtocol proto = isScp
+                ? ConnectionProtocol.SSH
+                : connStr.Protocol.GetValueOrDefault((ConnectionProtocol)Enum.Parse(typeof(ConnectionProtocol), protoString));
+            SessionData session = new SessionData
             {
-                HostConnectionString connStr = new HostConnectionString(host);
-                bool isScp = "SCP" == protoString;
-                ConnectionProtocol proto = isScp
-                    ? ConnectionProtocol.SSH
-                    : connStr.Protocol.GetValueOrDefault((ConnectionProtocol)Enum.Parse(typeof(ConnectionProtocol), protoString));
-                SessionData session = new SessionData
-                {
-                    Host = connStr.Host,
-                    SessionName = connStr.Host,
-                    SessionId = SuperPuTTY.MakeUniqueSessionId(SessionData.CombineSessionIds("ConnectBar", connStr.Host)),
-                    Proto = proto,
-                    Port = connStr.Port.GetValueOrDefault(dlgEditSession.GetDefaultPort(proto)),
-                    Username = this.tbTxtBoxLogin.Text,
-                    Password = this.tbTxtBoxPassword.Text,
-                    PuttySession = (string)this.tbComboSession.SelectedItem
-                };
-                SuperPuTTY.OpenSession(new SessionDataStartInfo { Session = session, UseScp = isScp });
-                oldHostName = this.tbTxtBoxHost.Text;
-                RefreshConnectionToolbarData();
-            }
+                Host = connStr.Host,
+                SessionName = connStr.Host,
+                SessionId = SuperPuTTY.MakeUniqueSessionId(SessionData.CombineSessionIds("ConnectBar", connStr.Host)),
+                Proto = proto,
+                Port = connStr.Port.GetValueOrDefault(dlgEditSession.GetDefaultPort(proto)),
+                Username = this.tbTxtBoxLogin.Text,
+                Password = this.tbTxtBoxPassword.Text,
+                PuttySession = (string)this.tbComboSession.SelectedItem
+            };
+            SuperPuTTY.OpenSession(new SessionDataStartInfo { Session = session, UseScp = isScp });
+            oldHostName = this.tbTxtBoxHost.Text;
+            RefreshConnectionToolbarData();
         }
 
         void RefreshConnectionToolbarData()
