@@ -982,10 +982,13 @@ namespace SuperPutty
             // Method contract
             if (String.IsNullOrEmpty(this.tbTxtBoxHost.Text)) return;
 
-            String host = this.tbTxtBoxHost.Text;
+            var hosts = this.tbTxtBoxHost.Text.Split();
             String protoString = (string)this.tbComboProtocol.SelectedItem;
 
-            TryConnectHost(host, protoString);
+            foreach (var host in hosts)
+            {
+                TryConnectHost(host, protoString);
+            }
             RefreshConnectionToolbarData();
         }
 
